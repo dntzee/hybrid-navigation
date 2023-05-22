@@ -10,9 +10,15 @@ import static com.reactnative.hybridnavigation.Parameters.toBundle;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.TypefaceSpan;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -26,6 +32,47 @@ import com.navigation.androidx.Style;
 import com.navigation.androidx.ToolbarButtonItem;
 
 import java.util.ArrayList;
+
+class CustomTypefaceSpan extends TypefaceSpan {
+
+    private final Typeface newType;
+
+    public CustomTypefaceSpan(String family, Typeface type) {
+        super(family);
+        newType = type;
+    }
+
+    @Override
+    public void updateDrawState(TextPaint ds) {
+        applyCustomTypeFace(ds, newType);
+    }
+
+    @Override
+    public void updateMeasureState(TextPaint paint) {
+        applyCustomTypeFace(paint, newType);
+    }
+
+    private static void applyCustomTypeFace(Paint paint, Typeface tf) {
+        int oldStyle;
+        Typeface old = paint.getTypeface();
+        if (old == null) {
+            oldStyle = 0;
+        } else {
+            oldStyle = old.getStyle();
+        }
+
+        int fake = oldStyle & ~tf.getStyle();
+        if ((fake & Typeface.BOLD) != 0) {
+            paint.setFakeBoldText(true);
+        }
+
+        if ((fake & Typeface.ITALIC) != 0) {
+            paint.setTextSkewX(-0.25f);
+        }
+
+        paint.setTypeface(tf);
+    }
+}
 
 public class Garden {
 
@@ -64,7 +111,7 @@ public class Garden {
     boolean extendedLayoutIncludesTopBar;
 
     boolean forceTransparentDialogWindow;
-    
+
     Garden(@NonNull HybridFragment fragment, Style style) {
         // 构造 garden 实例时，Toolbar 还没有被创建
 
@@ -79,12 +126,12 @@ public class Garden {
         Bundle tabItem = options.getBundle("tabItem");
         this.hidesBottomBarWhenPushed = tabItem == null || tabItem.getBoolean("hideTabBarWhenPush", true);
         this.extendedLayoutIncludesTopBar = options.getBoolean("extendedLayoutIncludesTopBar", false);
-        
+
         if (options.get("fitsOpaqueNavigationBarAndroid") != null) {
             boolean fitsOpaqueNavigationBar = options.getBoolean("fitsOpaqueNavigationBarAndroid");
             style.setFitsOpaqueNavigationBar(fitsOpaqueNavigationBar);
         }
-        
+
         String screenColor = options.getString("screenBackgroundColor");
         if (!TextUtils.isEmpty(screenColor)) {
             style.setScreenBackgroundColor(Color.parseColor(screenColor));
@@ -127,7 +174,12 @@ public class Garden {
         String moduleName = titleItem.getString("moduleName");
         if (moduleName == null) {
             String title = titleItem.getString("title");
-            fragment.setTitle(title);
+            //更改导航标题字体
+            Typeface font = Typeface.createFromAsset(fragment.getActivity().getAssets(), "fonts/plus_jakarta_text_bold.otf");
+            SpannableString mNewTitle = new SpannableString(title);
+            mNewTitle.setSpan(new CustomTypefaceSpan("", font), 0, mNewTitle.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            //fragment.setTitle(title);
+            fragment.setTitle(mNewTitle);
         }
     }
 
