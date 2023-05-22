@@ -118,10 +118,13 @@ static GlobalStyle *globalStyle;
         }
 
         // backIcon
-        NSDictionary *backIcon = self.options[@"backIcon"];
-        if (backIcon) {
-            self.backIcon = [HBDUtils UIImage:backIcon];
-        }
+//        NSDictionary *backIcon = self.options[@"backIcon"];
+//        if (backIcon) {
+//            self.backIcon = [HBDUtils UIImage:backIcon];
+//        }
+        UIEdgeInsets insets = UIEdgeInsetsMake(0, -8, 0, 0);
+        UIImage *backArrowImage = [[UIImage imageNamed:@"nav_back_black"] imageWithAlignmentRectInsets:insets];
+        self.backIcon = backArrowImage;
 
         // topBarTintColor,
         NSString *topBarTintColor = self.options[@"topBarTintColor"];
@@ -241,7 +244,10 @@ static GlobalStyle *globalStyle;
     if (self.titleTextColor) {
         titleAttributes[NSForegroundColorAttributeName] = self.titleTextColor;
     }
-    titleAttributes[NSFontAttributeName] = [UIFont systemFontOfSize:self.titleTextSize];
+    //更改导航标题字体、大小
+    //titleAttributes[NSFontAttributeName] = [UIFont systemFontOfSize:self.titleTextSize];
+    titleAttributes[NSFontAttributeName] = [UIFont fontWithName:@"PlusJakartaText-Bold" size:16];
+    [navigationBar setTitleTextAttributes:titleAttributes];
     [navigationBar setTitleTextAttributes:titleAttributes];
 }
 
@@ -256,7 +262,7 @@ static GlobalStyle *globalStyle;
 - (void)inflateTabBar:(UITabBar *)tabBar {
     if (@available(iOS 15.0, *)) {
         UITabBarAppearance *appearance = [UITabBarAppearance new];
-        [appearance configureWithDefaultBackground];
+        [appearance configureWithTransparentBackground];
         appearance.backgroundImage = [HBDUtils imageWithColor:self.tabBarBackgroundColor];
         appearance.shadowImage = self.tabBarShadowImage;
         tabBar.scrollEdgeAppearance = appearance;
