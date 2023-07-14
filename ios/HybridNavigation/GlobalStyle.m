@@ -122,7 +122,7 @@ static GlobalStyle *globalStyle;
 //        if (backIcon) {
 //            self.backIcon = [HBDUtils UIImage:backIcon];
 //        }
-        UIEdgeInsets insets = UIEdgeInsetsMake(0, -8, 0, 0);
+        UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, 0, 0);
         UIImage *backArrowImage = [[UIImage imageNamed:@"nav_back_black"] imageWithAlignmentRectInsets:insets];
         self.backIcon = backArrowImage;
 
